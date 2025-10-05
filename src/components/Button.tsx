@@ -26,7 +26,7 @@ export default function Button({
 
 	const variants = {
 		primary:
-			"bg-brand text-white hover:bg-brand-700 active:translate-y-[1px]",
+			"bg-brand text-white hover:bg-brand-dark active:translate-y-[1px]",
 		outline:
 			"border text-gray-900 hover:bg-gray-50 active:translate-y-[1px]",
 		ghost: "text-gray-700 hover:bg-gray-100 active:translate-y-[1px]",

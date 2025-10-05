@@ -1,6 +1,10 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { Card } from "./Card";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
 
 export default function CourseCard({
 	id,
@@ -19,9 +23,37 @@ export default function CourseCard({
 	categories: { id: string; name: string }[];
 	lessonCount: number;
 }) {
+	const card = useRef<HTMLDivElement>(null);
+	const { contextSafe } = useGSAP({ scope: card });
+
+	const onEnter = contextSafe(() => {
+		gsap.to(card.current, {
+			y: -8,
+			scale: 1.02,
+			boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+			duration: 0.3,
+			ease: "power2.out",
+		});
+	});
+
+	const onLeave = contextSafe(() => {
+		gsap.to(card.current, {
+			y: 0,
+			scale: 1,
+			boxShadow:
+				"0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+			duration: 0.3,
+			ease: "power2.out",
+		});
+	});
+
 	return (
-		<Link href={`/course/${slug}`} className="block">
-			<Card>
+		<Link
+			href={`/course/${slug}`}
+			className="block"
+			onMouseEnter={onEnter}
+			onMouseLeave={onLeave}>
+			<Card ref={card}>
 				<div className="aspect-video w-full overflow-hidden rounded-t-2xl bg-gray-100">
 					{thumbnail ? (
 						<Image

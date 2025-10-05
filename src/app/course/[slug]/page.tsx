@@ -1,6 +1,26 @@
+
 import { auth } from "@clerk/nextjs/server";
 import db, { prisma } from "../../../../lib/prisma";
 import SubmitButton from "@/components/SubmitButton";
+import type { Metadata, ResolvingMetadata } from "next";
+
+type Props = {
+	params: { slug: string };
+};
+
+export async function generateMetadata(
+	{ params }: Props,
+	parent: ResolvingMetadata
+): Promise<Metadata> {
+	const course = await db.course.findUnique({
+		where: { slug: params.slug },
+	});
+
+	return {
+		title: course?.title ?? "Course",
+		description: course?.description,
+	};
+}
 
 type Params = Promise<{ slug: string }>;
 
@@ -38,7 +58,7 @@ export default async function CoursePage({ params }: { params: Params }) {
 			where: { clerkId: userId },
 		});
 		if (!profile) {
-			// create lightweight profile
+		
 			profile = await prisma.userProfile.create({
 				data: { clerkId: userId, email: "" },
 			});

@@ -1,7 +1,27 @@
+
 import { auth } from "@clerk/nextjs/server";
 import prisma from "../../../../../../lib/prisma";
 import SubmitButton from "@/components/SubmitButton";
 import { redirect } from "next/navigation";
+import type { Metadata, ResolvingMetadata } from "next";
+
+type Props = {
+	params: { id: string };
+};
+
+export async function generateMetadata(
+	{ params }: Props,
+	parent: ResolvingMetadata
+): Promise<Metadata> {
+	const lesson = await prisma.lesson.findUnique({
+		where: { id: params.id },
+		include: { course: true },
+	});
+
+	return {
+		title: `${lesson?.course.title}: ${lesson?.title ?? "Lesson"}`,
+	};
+}
 
 type Params = Promise<{ slug: string; id: string }>;
 
@@ -33,7 +53,7 @@ export default async function LessonPage({ params }: { params: Params }) {
 	const prev = idx > 0 ? lessons[idx - 1] : null;
 	const next = idx < lessons.length - 1 ? lessons[idx + 1] : null;
 
-	// ✅ Video handling: YouTube vs Uploaded video
+	
 	const isYouTube = !!lesson.youtubeVideoId;
 	const videoNode = isYouTube ? (
 		<div className="mt-4 aspect-video w-full overflow-hidden rounded-xl">
@@ -78,7 +98,6 @@ export default async function LessonPage({ params }: { params: Params }) {
 		<div className="max-w-3xl mx-auto p-6">
 			<h1 className="text-2xl font-semibold">{lesson.title}</h1>
 
-			{/* ✅ Video render */}
 			{videoNode}
 
 			<form action={markCompleteAction} className="mt-4">

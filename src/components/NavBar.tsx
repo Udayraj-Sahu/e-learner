@@ -25,14 +25,14 @@ export default function NavBar() {
 	return (
 		<header className="sticky top-0 z-20 border-b bg-white/80 backdrop-blur">
 			<div className="mx-auto flex max-w-6xl items-center gap-3 p-3 sm:p-4">
-				{/* Brand (visible on mobile; desktop brand lives in sidebar) */}
+			
 				<Link
 					href="/"
 					className="md:hidden text-lg font-semibold tracking-tight">
 					rbas
 				</Link>
 
-				{/* Search */}
+				
 				<form
 					onSubmit={onSubmit}
 					className="mx-auto flex w-full max-w-2xl items-center gap-2">
@@ -54,7 +54,7 @@ export default function NavBar() {
 					</Button>
 				</form>
 
-				{/* Auth */}
+			
 				<div className="ml-auto flex items-center gap-2">
 					<SignedOut>
 						<Button variant="outline" size="sm">

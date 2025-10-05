@@ -1,4 +1,4 @@
-// app/not-found.tsx
+
 export default function NotFound() {
 	return (
 		<div className="mx-auto max-w-2xl p-6">

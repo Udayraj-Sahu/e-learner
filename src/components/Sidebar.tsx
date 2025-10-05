@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "../../lib/prisma";
 import { Home, Code2, Database, Network, Layers } from "lucide-react";
 
-// Fixed order
+
 const ORDER = ["frontend", "backend", "ai-ml", "dsa"] as const;
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -13,7 +13,7 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 export default async function Sidebar() {
-	// Only fetch the four we care about, then sort by ORDER
+
 	const cats = await prisma.category.findMany({
 		where: { slug: { in: [...ORDER] } },
 	});

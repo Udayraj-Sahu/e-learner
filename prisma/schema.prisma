@@ -16,9 +16,10 @@ enum CourseSource {
 model UserProfile {
   id          String       @id @default(cuid())
   clerkId     String       @unique
-  email       String? // made optional to avoid empty-string collisions
+  email       String?
+
   name        String?
-  imageUrl    String?
+imageUrl    String?
   enrollments Enrollment[]
   progresses  Progress[]
   createdAt   DateTime     @default(now())
@@ -30,14 +31,14 @@ model UserProfile {
 model Course {
   id                String           @id @default(cuid())
   title             String
-  slug              String           @unique
+  slug              String      @unique
   description       String
   thumbnail         String?
   lessons           Lesson[]
   enrollments       Enrollment[]
   categories        CourseCategory[]
   source            CourseSource     @default(ADMIN)
-  youtubePlaylistId String?          @unique
+  youtubePlaylistId String? @unique
   channelTitle      String?
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
@@ -46,17 +47,20 @@ model Course {
 }
 
 model Lesson {
-  id        String   @id @default(cuid())
-  courseId  String
-  title     String
-  index     Int
-  videoUrl  String
-  content   String?
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  progess   Progress[]
-  @@unique([courseId, index])       // used by upsert: courseId_index
+  id             String      @id @default(cuid())
+  courseId       String
+  title          String
+  index          Int
+  videoUrl       String? 
+  content        String?
+  youtubeVideoId String? 
+  course         Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  progess        Progress[]
+
+  @@unique([courseId, index])
+  @@unique([courseId, youtubeVideoId]) 
   @@index([courseId])
 }
 
@@ -77,7 +81,7 @@ model CourseCategory {
   course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  @@id([courseId, categoryId])      // used by upsert: courseId_categoryId
+  @@id([courseId, categoryId])    
 }
 
 model Enrollment {
@@ -99,7 +103,7 @@ model Progress {
   lessonId    String
   completed   Boolean     @default(false)
   completedAt DateTime?
-  user        UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+user        UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
   lesson      Lesson      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])

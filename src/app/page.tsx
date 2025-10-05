@@ -1,7 +1,15 @@
+
 import { prisma } from "../../lib/prisma";
 import CourseCard from "../components/CourseCard";
+import { Metadata } from "next";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export const metadata: Metadata = {
+	title: "All Courses",
+	description:
+		"Browse our extensive catalog of courses to find your next learning adventure.",
+};
 
 export default async function Home({
 	searchParams,

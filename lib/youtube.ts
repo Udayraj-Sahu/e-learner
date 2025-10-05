@@ -6,7 +6,6 @@ function key() {
 	return k;
 }
 
-// --- TYPES ---
 
 interface YouTubeThumbnail {
 	url: string;
@@ -39,7 +38,7 @@ interface YouTubePlaylistItem {
 	contentDetails?: { videoId?: string };
 }
 
-// --- FUNCTIONS ---
+
 
 export async function ytPlaylistInfo(playlistId: string) {
 	const url = new URL(`${YT}/playlists`);
@@ -94,14 +93,14 @@ export async function ytPlaylistItemsAll(
 }
 
 export function parsePlaylistId(input: string) {
-	// Accept raw ID or full URL
+	
 	try {
 		if (/^[A-Za-z0-9_-]{10,}$/.test(input)) return input;
 		const u = new URL(input);
 		const id = u.searchParams.get("list");
 		if (id) return id;
 	} catch {
-		// fallthrough
+	
 	}
 	throw new Error("Invalid playlist URL/ID");
 }

@@ -11,10 +11,6 @@ import {
 export default async function Creator() {
 	const { userId } = await auth();
 	if (!userId) return <div className="p-6">Sign in</div>;
-
-	// For the simple admin gate you already set up, keep using requireAdmin() if you prefer.
-
-	// SERVER ACTIONS
 	async function createCourseAction(fd: FormData) {
 		"use server";
 		const title = String(fd.get("title"));
@@ -46,11 +42,9 @@ export default async function Creator() {
 		const max = Math.max(1, Math.min(200, Number(fd.get("max") || 50)));
 		const playlistId = parsePlaylistId(input);
 
-		// 1) Fetch playlist meta + items
 		const meta = await ytPlaylistInfo(playlistId);
 		const items = await ytPlaylistItemsAll(playlistId, max);
 
-		// 2) Upsert course by youtubePlaylistId
 		const slug = toSlug(meta.title || `yt-${playlistId}`);
 		const course = await prisma.course.upsert({
 			where: { youtubePlaylistId: playlistId },
@@ -80,7 +74,7 @@ export default async function Creator() {
 			},
 		});
 
-		// 3) Link a category if provided
+		
 		if (categoryId) {
 			await prisma.courseCategory.upsert({
 				where: {
@@ -91,7 +85,7 @@ export default async function Creator() {
 			});
 		}
 
-		// 4) Create/Upsert lessons (ordered)
+	
 		let index = 1;
 		for (const it of items) {
 			const vid = it.contentDetails?.videoId as string | undefined;
@@ -110,7 +104,7 @@ export default async function Creator() {
 					title,
 					index,
 					youtubeVideoId: vid,
-					// Keep videoUrl null for YT; we'll render via iframe.
+				
 					videoUrl: null,
 				},
 			});
