@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum CourseSource {
+  ADMIN
+  YOUTUBE
+}
+
+model UserProfile {
+  id          String       @id @default(cuid())
+  clerkId     String       @unique
+  email       String? // made optional to avoid empty-string collisions
+  name        String?
+  imageUrl    String?
+  enrollments Enrollment[]
+  progresses  Progress[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([clerkId])
+}
+
+model Course {
+  id                String           @id @default(cuid())
+  title             String
+  slug              String           @unique
+  description       String
+  thumbnail         String?
+  lessons           Lesson[]
+  enrollments       Enrollment[]
+  categories        CourseCategory[]
+  source            CourseSource     @default(ADMIN)
+  youtubePlaylistId String?          @unique
+  channelTitle      String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([title])
+}
+
+model Lesson {
+  id        String   @id @default(cuid())
+  courseId  String
+  title     String
+  index     Int
+  videoUrl  String
+  content   String?
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  progess   Progress[]
+  @@unique([courseId, index])       // used by upsert: courseId_index
+  @@index([courseId])
+}
+
+model Category {
+  id        String           @id @default(cuid())
+  slug      String           @unique
+  name      String
+  courses   CourseCategory[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([name])
+}
+
+model CourseCategory {
+  courseId   String
+  categoryId String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([courseId, categoryId])      // used by upsert: courseId_categoryId
+}
+
+model Enrollment {
+  id        String      @id @default(cuid())
+  userId    String
+  courseId  String
+  user      UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+model Progress {
+  id          String      @id @default(cuid())
+  userId      String
+  lessonId    String
+  completed   Boolean     @default(false)
+  completedAt DateTime?
+  user        UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
+}
