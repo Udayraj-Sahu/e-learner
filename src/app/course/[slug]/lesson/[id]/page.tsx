@@ -11,7 +11,7 @@ type Props = {
 
 export async function generateMetadata(
 	{ params }: Props,
-	parent: ResolvingMetadata
+	_parent: ResolvingMetadata
 ): Promise<Metadata> {
 	const lesson = await prisma.lesson.findUnique({
 		where: { id: params.id },

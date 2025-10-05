@@ -10,7 +10,7 @@ type Props = {
 
 export async function generateMetadata(
 	{ params }: Props,
-	parent: ResolvingMetadata
+	_parent: ResolvingMetadata
 ): Promise<Metadata> {
 	const course = await db.course.findUnique({
 		where: { slug: params.slug },
